@@ -1,4 +1,4 @@
-*****THE 4Kb intro by Elliot - 1995***
+THE 4Kb intro by Elliot - 1995
 Lion finished first at the Wired 1995
 
 ![lion](./assets/lion.png)
