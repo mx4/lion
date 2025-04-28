@@ -1,12 +1,12 @@
-; /ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\
+; /Ä
 ; |      PARTIE 3D Environment Mapping de 'Lion'.   |
-; \ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ/
+; \Ä
 ; DATAS :
 
 TRI                     = 1            ; 1=TRi QSORT  et 0=pas de tri
 distance                = 10  ;(2^9=512)
 
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+;
 INIT_3D                 proc    near
                         mov     es,cs:Virtuel
                         mov     ds,cs:SegAdresse1
@@ -29,9 +29,9 @@ INIT_3D                 proc    near
                         ret
 INIT_3D                 endp
 
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+;
 
-MAIN_3D                 proc    near                        
+MAIN_3D                 proc    near
 MAINBCL:                CALL    MAIN3D
                         WAIT_VBL
                         mov     es,Ecran
@@ -40,8 +40,8 @@ MAINBCL:                CALL    MAIN3D
                         xor     si,si
                         mov     di,si
                         rep     movsd
-                        
-                        
+
+
                         mov     es,cs:Virtuel
                         mov     ds,cs:SegAdresse1
                         xor     di,di
@@ -56,7 +56,7 @@ MAINBCL:                CALL    MAIN3D
                         mov     es,ax
                         mov     ds,ax
                         LION
-                
+
                 good:   add     Xa,12
                         add     Ya,2
                         add     Za,2
@@ -74,7 +74,7 @@ MAIN_3D                 endp
 ;Û               DEBUT DES ROUTINES DE GESTION DE LA 3D                 Û
 ;ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
 ;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-;/ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\
+;/Ä
 ;| PROCEDURE PRINCIPALE DE LA 3D                                            |
 ;|       - rotation des points et des vecteurs,                             |
 ;|       - d‚termination de la visibilit‚,                                  |
@@ -83,7 +83,7 @@ MAIN_3D                 endp
 ;\ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ/
 
 MAIN3D                  proc    near
-; Rotation des points et des vecteurs...ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ                        
+; Rotation des points et des vecteurs...ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
                         CALL    PrepMatrice
 
                         mov     si,OFFSET LionPts
@@ -108,7 +108,7 @@ MAIN3D                  proc    near
 
 ; projection des points … l'‚cran...ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
-                        CALL    XDZ 
+                        CALL    XDZ
 
 ; D‚tection des Faces visibles...ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
@@ -118,7 +118,7 @@ MAIN3D                  proc    near
         mainboucle:     push    cx
                         movzx   ebp,cx
                         lea     bp,[ebp+ebp*2]
-                        
+
                         movzx   esi,LionFaces[bp+1]
                         shl     si,2
                         mov     ax,LionEcran[si]
@@ -138,7 +138,7 @@ MAIN3D                  proc    near
                         shr     si,1
                         lea     si,[esi+esi*2]
                         add     dx,LionPtsR[si+4]
-                        
+
                         movzx   si,LionFaces[bp+2]
                         shl     si,2
                         add     cx,LionEcran[si]
@@ -146,13 +146,13 @@ MAIN3D                  proc    near
                         shr     si,1
                         lea     si,[esi+esi*2]
                         add     dx,LionPtsR[si+4]
-                        
+
                         imul    ax,di
                         imul    bx,cx
-                        
+
                         cmp     ax,bx
                         jl      invisible
-                        
+
                         pop     ax
                         push    ax
                         shl     eax,16  ; met le Nø de Lion dans les 16 bits hauts
@@ -161,7 +161,7 @@ MAIN3D                  proc    near
                   patch:mov     dwd es:[1111],eax
                         add     w cs:Patch+3,4
                         add     nb_face_tri,4
-                        
+
           invisible:    pop     cx
                         inc     cx
                         cmp     cx,LionNb_Faces
@@ -178,7 +178,7 @@ MAIN3D                  proc    near
                         xor     si,si
         BclAffPoly:     movzx   ebx,FacesVisibles[si+2] ; BX= Nø Lion
                         lea     bx,[ebx+ebx*2]
-                        
+
                         movzx   ebp,LionFaces[bx]     ; bp=Nø du premier point
                         shl     bp,2
                         mov     eax,dwd LionEcran[bp]      ; ax=X
@@ -199,7 +199,7 @@ MAIN3D                  proc    near
                         lea     bp,[ebp+ebp*2]
                         mov     eax,dwd LionVctNrmPtsR[bp]
                         mov     dwd fVx2,eax
-                        
+
                         movzx   bp,LionFaces[bx+2]   ; bp=Nø du troisiŠme point
                         shl     bp,2
                         mov     eax,dwd LionEcran[bp]      ; ax=X
@@ -209,11 +209,11 @@ MAIN3D                  proc    near
                         lea     bp,[ebp+ebp*2]
                         mov     eax,dwd LionVctNrmPtsR[bp]
                         mov     dwd fVx3,eax
-                        
+
         Gofilling:      push    si
                         call    FILL_POLY
                         pop     si
-                        
+
                         add     si,4
                         cmp     dwd FacesVisibles[si],0
                         jnz     BclAffPoly
@@ -238,17 +238,17 @@ PrepMatrice             proc    near
                         shl     bx,1
                         and     bh,dl
                         movsx   ecx,w cos_table[bx]
-                        
+
                         sub     bh,2
                         and     bh,dl
                         movsx   ebp,w cos_table[bx]
-                        
+
                         mov     bx,Ya
                         shl     bx,1
                         and     bh,dl
                         movsx   eax,w cos_table[bx]
                         mov     cosy,eax
-                        
+
                         sub     bh,2
                         and     bh,dl
                         movsx   eax,w cos_table[bx]
@@ -258,11 +258,11 @@ PrepMatrice             proc    near
                         shl     bx,1
                         and     bh,dl
                         movsx   edi,w cos_table[bx]
-                        
+
                         sub     bh,2
                         and     bh,dl
                         movsx   esi,w cos_table[bx]
-                        
+
 ; Fin de la pr‚paration des sinus et cosinus.
 
                         mov     eax,edi
@@ -345,7 +345,7 @@ PrepMatrice             endp
 
 ROTATE                  proc    near
                         mov     cl,3
-        
+
         @rot1:          movsx   eax,b [si]
                         imul    dwd [bx]
                         shrd    eax,edx,10
@@ -370,7 +370,7 @@ ROTATE                  endp
 
 ROTATE1                 proc    near
                         mov     cl,3
-        
+
         @rot2:          movsx   eax,w [si]
                         imul    dwd [bx]
                         shrd    eax,edx,10
@@ -401,7 +401,7 @@ Byte_Sort               proc    near
                         mov     dx,1
                 @loop1: mov     si,OFFSET Tab0
                         mov     di,OFFSET Tab1
-                        
+
                         xor     bx,bx
                 @loop2: mov     eax,dwd FacesVisibles[bx]
                         test    ax,dx
@@ -414,7 +414,7 @@ Byte_Sort               proc    near
                 @s1:    add     bx,4
                         cmp     bx,Nb_Face_Tri
                         jnz     @loop2
-                        
+
                         push    si
                         mov     si,OFFSET Tab1
                         mov     cx,di
@@ -473,7 +473,7 @@ XDZ                     endp
 
 FILL_POLY       proc    near
                 mov     fs,SegPlasma
-                mov     ebx,dwd fx1                
+                mov     ebx,dwd fx1
 
                 mov     eax,dwd fy1
                 cmp     ax,fy2
@@ -495,7 +495,7 @@ s_ok_1:         mov     eax,dwd fy2
                 xchg    eax,dwd fVx2
                 mov     dwd fVx3,eax
 
-s_ok_2:         
+s_ok_2:
                 mov     eax,dwd fy1
                 cmp     ax,fy2
                 jle     s_ok_3
@@ -505,7 +505,7 @@ s_ok_2:
                 mov     eax,dwd fVx1
                 xchg    eax,dwd fVx2
                 mov     dwd fVx1,eax
-                
+
 s_ok_3:         mov     ax,319
                 cmp     fy1,199
                 jg      end_1
@@ -541,7 +541,7 @@ s_ok_3:         mov     ax,319
                 call    INTERPOLE
 
 ; Interpolation des X et Y de la mappe sur le grand cot‚:
-                
+
                 mov     ax,fVx3
                 mov     bx,fVx1
                 sub     ax,bx
@@ -563,7 +563,7 @@ s_ok_3:         mov     ax,319
                 add     di,4
                 dec     cx
                 jnz     po2
-                
+
                 mov     ax,fVy3
                 mov     bx,fVy1
                 sub     ax,bx
@@ -581,7 +581,7 @@ s_ok_3:         mov     ax,319
                 jnz     po3
 
 ; Calcul des incr‚ments inc_X et inc_Y :
-        
+
         calcinc:mov     si,fy2
                 sub     si,fy1
                 shl     si,2
@@ -614,7 +614,7 @@ s_ok_3:         mov     ax,319
                 mov     ax,inc_X
                 mov     w cs:incx+1,ax
                 mov     w cs:incx1+1,ax
-                
+
 
                 mov     bp,fy1
                 mov     ax,320
@@ -634,7 +634,7 @@ draw_next_line: or      bp,bp
                 jl      fnext
                 cmp     bp,199
                 ja      end_1
-                
+
                 mov     di,buffer[si]
                 mov     cx,buffer[si+2]
                 mov     ah,b bufferX[si]
@@ -663,7 +663,7 @@ draw_next_line: or      bp,bp
       offdep1:  add     di,1111
                 mov     bl,ah
                 mov     bh,dh
-                
+
       floop:    mov     bl,fs:[bx]
                 mov     es:[di],bl
          incx:  add     ax,1111
@@ -679,7 +679,7 @@ draw_next_line: or      bp,bp
                 inc     bp
                 cmp     bp,fy3
                 jng     draw_next_line
-                
+
                 jmp     end_1           ; Fini
 
 ; Partie remplissant vers la gauche :
@@ -707,11 +707,11 @@ draw_next_line1:or      bp,bp
                 dec     cx
                 cmp     cx,319
                 jne     fsuite71
-      
-      fsuite70: or      di,di                
+
+      fsuite70: or      di,di
                 jge     fsuite72
                 xor     di,di
-      fsuite72: 
+      fsuite72:
                 mov     bx,cx
                 sub     cx,di
                 js      end_1
@@ -720,7 +720,7 @@ draw_next_line1:or      bp,bp
        offdep2: add     di,1111
                 mov     bl,ah
                 mov     bh,dh
-                
+
       floop1:   mov     bl,fs:[bx]
                 mov     es:[di],bl
        incx1:   sub     ax,1111
@@ -728,9 +728,9 @@ draw_next_line1:or      bp,bp
                 mov     bl,ah
                 dec     di
                 mov     bh,dh
-                dec     cx    
+                dec     cx
                 jnz     floop1
-                
+
      fnext1:    add     si,4
                 add     w cs:offdep2+2,320
                 inc     bp
@@ -750,7 +750,7 @@ INTERPOLE       proc    near
                 inc     bp
                 jnz     isuite
                 inc     bp
-        
+
     isuite:     movsx   ebp,bp
                 mov     ax,dx
                 sub     ax,bx     ; ax=delta X
@@ -762,7 +762,7 @@ INTERPOLE       proc    near
                 ror     ebx,16
                 ror     eax,16
                 clc
-                
+
 Ibcl:           adc     ebx,eax
                 mov     [di],bx
                 inc     di
@@ -778,7 +778,7 @@ INTERPOLE       endp
 ;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 ; Pr‚calcule les vecteurs normaux en chaque points et les norme.
 
-GEN_NORM                proc    near                        
+GEN_NORM                proc    near
                         movzx   ecx,LionNb_Pts
                         lea     cx,[ecx+ecx*2]
                         mov     di,OFFSET LionVctNrmPts
@@ -802,7 +802,7 @@ GEN_NORM                proc    near
                         neg     ecx
                         mov     Z,ecx
                         mov     Z1,ecx
-                        
+
                         movzx   si,LionFaces[bx+1]
                         imul    si,3
                         movsx   ecx,Lionpts[si]
@@ -811,7 +811,7 @@ GEN_NORM                proc    near
                         add     Y,ecx
                         movsx   ecx,Lionpts[si+2]
                         add     Z,ecx          ; Premier vecteur fini.
-                        
+
                         movzx   si,LionFaces[bx+2]
                         imul    si,3
                         movsx   ecx,Lionpts[si]
@@ -820,7 +820,7 @@ GEN_NORM                proc    near
                         add     Y1,ecx
                         movsx   ecx,Lionpts[si+2]
                         add     Z1,ecx          ; Second vecteur fini.
-                        
+
                         ; Les vecteurs de surface sont finis.
 
                         mov     eax,Y
@@ -844,7 +844,7 @@ GEN_NORM                proc    near
                         sub     edx,edi
                         ; Zn fini
 
-                        mov     bp,3                        
+                        mov     bp,3
                   @po:  movzx   si,LionFaces[bx]
                         imul    si,6
                         add     LionVctNrmPts[si],ax
@@ -853,8 +853,8 @@ GEN_NORM                proc    near
                         inc     bx
                         dec     bp
                         jnz     @po
-                        
-                        
+
+
                         pop     bx
                         inc     bx
                         cmp     bx,LionNb_Faces
@@ -875,7 +875,7 @@ GEN_NORM                proc    near
                         add     eax,ebx
                         add     eax,ecx
                         mov     ebp,eax
-                        
+
                         CALL    RACINE
 
                         mov     edi,eax
@@ -922,7 +922,7 @@ GEN_NORM               endp
 ; entr‚e:EBP=carr‚
 ; sortie:EAX=racine
 
-RACINE                  proc    near                        
+RACINE                  proc    near
                         mov     cl,7
                         mov     ebx,0FFh
              racbcl:    mov     eax,ebp
