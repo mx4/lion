@@ -8,6 +8,8 @@ Notes
 https://files.scene.org/view/parties/1995/wired95/results.txt
 https://files.scene.org/view/parties/1995/wired95/in4k/ep-lion.zip
 
+<video src="https://www.youtube.com/watch?v=CFP9ZK5iWKM" width="320" height="200" controls></video>
+
 ![lion](./assets/lion.png)
 ![rotozoom](./assets/rotozoom.png)
 ![cloud](./assets/cloud.png)
