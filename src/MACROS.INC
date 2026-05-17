@@ -1,31 +1,25 @@
-;  /\
-; /ş°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°ş\
-; |°°°°°°°°°°°°°°°°°°°°°ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ°°°°°°°°°°°°°°°°°°°°°|
-; |°°°°°°°°°°°°°°°°°°°°°         COM stories...        °°°°°°°°°°° (c) 94 °°|
-; |°°°°°°°°°°°°°°°°°°°°°ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ°°°°°°°°°°° BART­! °°|
-; \ş°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°ş/
-;  \/
-;
-;   ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; |        COM stories...        |
+
 
 b       equ byte ptr
-w       equ word ptr 
-dwd     equ dword ptr
+w       equ word ptr
+REPMOVSD                MACRO
+                        db      66h, 0F3h, 0A5h
+                        ENDM
 
+dwd     equ dword ptr
 
 DOS_                    MACRO code
 			mov    AX,4ch*256+code
 			int    21h
 			ENDM
 
-;   ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 WRITE                   MACRO  chaine
 			mov    AH,09h
 			mov    DX,offset chaine
 			int    21h
 			ENDM
-;   ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-; Affichage de chaine de caractŠres … la Pascal.
+; Affichage de chaine de caractÃ¨resa la Pascal.
 WRITELN                 MACRO   _string
 			local   _AfterString
 			call    _AfterString
@@ -34,13 +28,11 @@ WRITELN                 MACRO   _string
 			pop     dx
 			int     21h
 			ENDM
-;   ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
 VGA                     MACRO     lekel
 			mov       ax,lekel
 			int       10h
 			ENDM
-
-;   ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 WAIT_VBL                MACRO
 			LOCAL     @@l1,@@l2
@@ -55,9 +47,8 @@ WAIT_VBL                MACRO
 			jnz       @@l2
 			ENDM
 
-;   ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 NEWP                    MACRO  Segment,Taille   ; Alloue un bloc de
-			local  @@OkMemory       ; m‚moire de taille = …
+			local  @@OkMemory       ; mÃ©moire de taille = Ã 
 			mov    AH,48h           ; 16*Taille
 			mov    BX,Taille
 			int    21h              ; Taille : Word
@@ -65,13 +56,13 @@ NEWP                    MACRO  Segment,Taille   ; Alloue un bloc de
 			DOS_   255
 @@OkMemory:             mov    Segment,AX
 			ENDM
-;   ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
 DISPOS                  MACRO  Segment          ; Desalloue un bloc
 			mov    AH,49h           ; Segment est le segment
 			mov    ES,Segment       ; du bloc
 			int    21h
 			ENDM
-;   ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
 INIT_                   MACRO  Fincode,Pile
 			mov    AH,4Ah
 			mov    BX,Offset Fincode
@@ -80,16 +71,13 @@ INIT_                   MACRO  Fincode,Pile
 			int    21h
 			mov    SP,Offset Pile+8000
 			ENDM
-;   ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
 ;-----------------------------------------------------------------------------
-;    /\
+;
 ;   /                                                                    \
 ;   |         Gestionnaire de fichier...  ( by Barti & Max )             |
 ;   \                                                                    /
-;    \/
-;
 ;-----------------------------------------------------------------------------
-;   ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 Assign        MACRO     File,Attr,Handle      ; Attr = _ 0 : Lecture
 	      Local     @@OKAY                ;        _ 1 : Ecriture
@@ -102,9 +90,8 @@ Assign        MACRO     File,Attr,Handle      ; Attr = _ 0 : Lecture
 @@OKAY:       mov       Handle,AX             ;
 	      ENDM                            ; Si erreur on quitte !
 
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 ; Charge vers DS:DX
-BlockRead     MACRO     Handle,Bytes          ; <=> … :
+BlockRead     MACRO     Handle,Bytes          ; <=> Ã  :
 	      push      DS                    ;
 	      push      AX                    ;  BLOCKREAD(
 	      mov       AH,3Fh                ;  Handle,MEM[AX:DX],Bytes
@@ -115,7 +102,6 @@ BlockRead     MACRO     Handle,Bytes          ; <=> … :
 	      pop       DS
 	      endm
 
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 Close         MACRO      Handle 
 	      mov        ah,3Eh
@@ -123,13 +109,12 @@ Close         MACRO      Handle
 	      int        21h
 	      endm
 
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 Seek          MACRO      code,distanceH,distanceL,handle
 	      mov        ah,42h
 	      mov        al,code
 	      mov        bx,handle
-	      mov        cx,distanceH     ; mot fort   du d‚placement
+	      mov        cx,distanceH     ; mot fort   du dÃ©placement
 	      mov        dx,distanceL     ;  "  faible  "   "  "   "
 	      int        21h
 	      endm
@@ -138,7 +123,6 @@ Seek          MACRO      code,distanceH,distanceL,handle
 ;        1 :relatif
 ;        2 :fin
 
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 ; attend la frappe d'une touche
 Key?          MACRO
@@ -146,7 +130,6 @@ Key?          MACRO
 	      int 21h
 	      ENDM
 
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 pset          MACRO   X,Y,coul
 	      push 0A000h
@@ -160,7 +143,6 @@ pset          MACRO   X,Y,coul
 	      add bx,ax
 	      mov es:[bx],cl
 	      endm
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 RasterBleu    MACRO              ; Macro ki "allume" le raster
 	      mov       dx,3c8h
@@ -173,7 +155,6 @@ RasterBleu    MACRO              ; Macro ki "allume" le raster
 	      out       dx,al
 	      ENDM
 
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 RasterRouge   MACRO           ; Macro ki "allume" le raster
 	      mov       dx,3c8h
@@ -187,7 +168,6 @@ RasterRouge   MACRO           ; Macro ki "allume" le raster
 	      out       dx,al
 	      ENDM
 
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 RasterVert    MACRO     coul                   ; Macro ki "allume" le raster
 	      mov       dx,3c8h
 	      xor       al,al
@@ -200,7 +180,6 @@ RasterVert    MACRO     coul                   ; Macro ki "allume" le raster
 	      out       dx,al
 	      ENDM
 
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 Raster_Start  MACRO     coul                   ; Macro ki "allume" le raster
 	      mov       dx,3c8h
 	      xor       al,al
@@ -213,7 +192,6 @@ Raster_Start  MACRO     coul                   ; Macro ki "allume" le raster
 	      out       dx,al
 	      ENDM
 
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 Raster_end    MACRO                          ; Macro ki "eteint" le raster
 	      mov     dx,3c8h
@@ -226,7 +204,6 @@ Raster_end    MACRO                          ; Macro ki "eteint" le raster
 	      out     dx,al
 	      ENDM
 
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 Tempo           MACRO   delai
 		LOCAL   time
@@ -236,7 +213,6 @@ Tempo           MACRO   delai
 		jnz     time
 		ENDM
 
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 Hard          MACRO     wd                 ; Scrolling !
 	      push      dx
@@ -251,7 +227,6 @@ Hard          MACRO     wd                 ; Scrolling !
 	      pop       dx
 	      ENDM
 
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 Palette16     MACRO                           ; palette
 	      mov     dx,3c8h                ; ds:si pointe vers le taleau
@@ -262,7 +237,6 @@ Palette16     MACRO                           ; palette
 	      rep     outsb
 	      ENDM
 
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 PaletteS      MACRO                           ; palette
 	      mov     dx,3c8h                ; ds:si pointe vers le tableau
@@ -273,7 +247,6 @@ PaletteS      MACRO                           ; palette
 	      rep     outsb
 	      ENDM
 
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 SETCOLOR      MACRO   Number, R,G,B
 	      mov       dx,3c8h
@@ -288,12 +261,11 @@ SETCOLOR      MACRO   Number, R,G,B
 	      out       dx,al
 	      ENDM
 
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 ; passage en mode X
 InitX           MACRO                         
 		mov       dx,3c4h          ; Mode X 320x200 (TWEAKED)
-		mov       ax,0604h         ; Pas de Palette … zero
-		out       dx,ax            ; M‚moire vid‚o … zero aussi
+		mov       ax,0604h         ; Pas de Palette Ã  zero
+		out       dx,ax            ; MÃ©moire vidÃ©o Ã  zero aussi
 		mov       dl,0d4h
 		mov       ax,0014h
 		out       dx,ax
@@ -304,8 +276,7 @@ InitX           MACRO
 		xor       si,si
 		mov       cx,32768
 		mov       ax,0
-		rep       stosw
+		rep stosw
 		ENDM
 
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 

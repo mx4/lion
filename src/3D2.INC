@@ -1,6 +1,4 @@
-; /Ä
-; |      PARTIE 3D Environment Mapping de 'Lion'.   |
-; \Ä
+;|      PARTIE 3D Environment Mapping de 'Lion'.   |
 ; DATAS :
 
 TRI                     = 1            ; 1=TRi QSORT  et 0=pas de tri
@@ -14,7 +12,7 @@ INIT_3D                 proc    near
                         mov     si,di
                         mov     dl,200
                 @transf:mov     cx,320/4
-                        rep     movsd
+                        REPMOVSD
                         sub     si,(320-256)
                         dec     dl
                         jnz     @transf
@@ -39,8 +37,7 @@ MAINBCL:                CALL    MAIN3D
                         mov     cx,16000
                         xor     si,si
                         mov     di,si
-                        rep     movsd
-
+                        REPMOVSD
 
                         mov     es,cs:Virtuel
                         mov     ds,cs:SegAdresse1
@@ -48,7 +45,7 @@ MAINBCL:                CALL    MAIN3D
                         mov     si,di
                         mov     dl,200
              @transf1:  mov     cx,320/4
-                        rep     movsd
+                        REPMOVSD
                         sub     si,(320-256)
                         dec     dl
                         jnz     @transf1
@@ -69,27 +66,21 @@ MAINBCL:                CALL    MAIN3D
                         ret
 MAIN_3D                 endp
 
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-;ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
-;Û               DEBUT DES ROUTINES DE GESTION DE LA 3D                 Û
-;ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-;/Ä
+;|            DEBUT DES ROUTINES DE GESTION DE LA 3D                        |
 ;| PROCEDURE PRINCIPALE DE LA 3D                                            |
 ;|       - rotation des points et des vecteurs,                             |
-;|       - d‚termination de la visibilit‚,                                  |
+;|       - dÃ©termination de la visibilitÃ©,                                  |
 ;|       - tri des Faces visibles (QSORT),                                  |
 ;|       - affichage des Faces visibles.                                    |
-;\ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ/
 
 MAIN3D                  proc    near
-; Rotation des points et des vecteurs...ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; Rotation des points et des vecteurs...
                         CALL    PrepMatrice
 
                         mov     si,OFFSET LionPts
                         mov     di,OFFSET LionPtsR
                         mov     bx,OFFSET LionMatrice
-                        mov     ch,b LionNb_Pts
+                        mov     ch,byte ptr LionNb_Pts
          BclRot1:       CALL    ROTATE  ; rotation des points.
                         add     si,3
                         dec     ch
@@ -99,21 +90,21 @@ MAIN3D                  proc    near
                         mov     si,OFFSET LionVctNrmPts
                         mov     di,OFFSET LionVctNrmPtsR
                         mov     bx,OFFSET LionMatrice
-                        mov     ch,b LionNb_Pts
+                        mov     ch,byte ptr LionNb_Pts
          BclRot2:       CALL    ROTATE1  ; rotation des vecteurs normaux.
                         add     si,6
                         dec     ch
                         jnz     bclRot2
                         ; rotation VctNrmPts
 
-; projection des points … l'‚cran...ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; projection des points a l'Ã©cran
 
                         CALL    XDZ
 
-; D‚tection des Faces visibles...ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; DÃ©tection des Faces visibles..
 
                         mov     nb_face_tri,0
-                        mov     w cs:Patch+3,OFFSET FacesVisibles
+                        mov     word ptr cs:Patch+3,OFFSET FacesVisibles
                         xor     cx,cx
         mainboucle:     push    cx
                         movzx   ebp,cx
@@ -155,31 +146,31 @@ MAIN3D                  proc    near
 
                         pop     ax
                         push    ax
-                        shl     eax,16  ; met le Nø de Lion dans les 16 bits hauts
+                        shl     eax,16  ; met le NÂ° de Lion dans les 16 bits hauts
                         mov     ax,dx
                         add     ax,profondeur
                   patch:mov     dwd es:[1111],eax
-                        add     w cs:Patch+3,4
+                        add     word ptr cs:Patch+3,4
                         add     nb_face_tri,4
 
           invisible:    pop     cx
                         inc     cx
                         cmp     cx,LionNb_Faces
                         jnz     Mainboucle
-; Fin de la d‚termination des surFaces cach‚es.
+; Fin de la dÃ©termination des surFaces cachÃ©es.
 
-; Tri des Faces...ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; Tri des Faces...
                         IF      TRI EQ 1
                         CALL    Byte_Sort
                         ENDIF
 
-; Affichage des Faces visibles...ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; Affichage des Faces visibles...
 
                         xor     si,si
-        BclAffPoly:     movzx   ebx,FacesVisibles[si+2] ; BX= Nø Lion
+        BclAffPoly:     movzx   ebx,FacesVisibles[si+2] ; BX= NÂ° Lion
                         lea     bx,[ebx+ebx*2]
 
-                        movzx   ebp,LionFaces[bx]     ; bp=Nø du premier point
+                        movzx   ebp,LionFaces[bx]     ; bp=NÂ° du premier point
                         shl     bp,2
                         mov     eax,dwd LionEcran[bp]      ; ax=X
                         ror     eax,16
@@ -189,8 +180,7 @@ MAIN3D                  proc    near
                         mov     eax,dwd LionVctNrmPtsR[bp]
                         mov     dwd fVx1,eax
 
-
-                        movzx   bp,LionFaces[bx+1]   ; bp=Nø du second point
+                        movzx   bp,LionFaces[bx+1]   ; bp=NÂ° du second point
                         shl     bp,2
                         mov     eax,dwd LionEcran[bp]      ; ax=X
                         ror     eax,16
@@ -200,7 +190,7 @@ MAIN3D                  proc    near
                         mov     eax,dwd LionVctNrmPtsR[bp]
                         mov     dwd fVx2,eax
 
-                        movzx   bp,LionFaces[bx+2]   ; bp=Nø du troisiŠme point
+                        movzx   bp,LionFaces[bx+2]   ; bp=NÂ° du troisiÃ¨me point
                         shl     bp,2
                         mov     eax,dwd LionEcran[bp]      ; ax=X
                         ror     eax,16
@@ -222,10 +212,7 @@ MAIN3D                  proc    near
                         ret
 MAIN3D                  endp
 
-
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-; Pr‚pare une matrice de rotation {4,3} sur 3 axes.
+; PrÃ©pare une matrice de rotation {4,3} sur 3 axes.
 
 PrepMatrice             proc    near
                         xor     eax,eax
@@ -237,33 +224,33 @@ PrepMatrice             proc    near
                         mov     bx,Xa
                         shl     bx,1
                         and     bh,dl
-                        movsx   ecx,w cos_table[bx]
+                        movsx   ecx,word ptr cos_table[bx]
 
                         sub     bh,2
                         and     bh,dl
-                        movsx   ebp,w cos_table[bx]
+                        movsx   ebp,word ptr cos_table[bx]
 
                         mov     bx,Ya
                         shl     bx,1
                         and     bh,dl
-                        movsx   eax,w cos_table[bx]
+                        movsx   eax,word ptr cos_table[bx]
                         mov     cosy,eax
 
                         sub     bh,2
                         and     bh,dl
-                        movsx   eax,w cos_table[bx]
+                        movsx   eax,word ptr cos_table[bx]
                         mov     siny,eax
 
                         mov     bx,Za
                         shl     bx,1
                         and     bh,dl
-                        movsx   edi,w cos_table[bx]
+                        movsx   edi,word ptr cos_table[bx]
 
                         sub     bh,2
                         and     bh,dl
-                        movsx   esi,w cos_table[bx]
+                        movsx   esi,word ptr cos_table[bx]
 
-; Fin de la pr‚paration des sinus et cosinus.
+; Fin de la prÃ©paration des sinus et cosinus.
 
                         mov     eax,edi
                         imul    cosy
@@ -276,7 +263,7 @@ PrepMatrice             proc    near
                         mov     LionMatrice[4],eax
                         mov     eax,siny
                         mov     LionMatrice[8],eax
-; premiŠre ligne finie.
+; premiÃ¨re ligne finie.
                         mov     eax,esi
                         imul    ecx
                         shrd    eax,edx,10
@@ -332,13 +319,11 @@ PrepMatrice             proc    near
                         imul    cosy
                         shrd    eax,edx,10
                         mov     LionMatrice[40],eax
-; troisiŠme ligne finie.
+; troisiÃ¨me ligne finie.
                         ret
 PrepMatrice             endp
 
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-; Fait rotater les coordonn‚es d'un objet … partir d'une matrice de rotation.
+; Fait rotater les coordonnÃ©es d'un objet Ã  partir d'une matrice de rotation.
 ; bx=OFFSET Matrice
 ; si=OFFSET PointSource
 ; di=OFFSET PointDestination
@@ -346,15 +331,15 @@ PrepMatrice             endp
 ROTATE                  proc    near
                         mov     cl,3
 
-        @rot1:          movsx   eax,b [si]
+        @rot1:          movsx   eax,byte ptr [si]
                         imul    dwd [bx]
                         shrd    eax,edx,10
                         mov     ebp,eax
-                        movsx   eax,b [si+1]
+                        movsx   eax,byte ptr [si+1]
                         imul    dwd [bx+4]
                         shrd    eax,edx,10
                         add     ebp,eax
-                        movsx   eax,b [si+2]
+                        movsx   eax,byte ptr [si+2]
                         imul    dwd [bx+8]
                         shrd    eax,edx,10
                         add     eax,ebp
@@ -371,15 +356,15 @@ ROTATE                  endp
 ROTATE1                 proc    near
                         mov     cl,3
 
-        @rot2:          movsx   eax,w [si]
+        @rot2:          movsx   eax,word ptr [si]
                         imul    dwd [bx]
                         shrd    eax,edx,10
                         mov     ebp,eax
-                        movsx   eax,w [si+2]
+                        movsx   eax,word ptr [si+2]
                         imul    dwd [bx+4]
                         shrd    eax,edx,10
                         add     ebp,eax
-                        movsx   eax,w [si+4]
+                        movsx   eax,word ptr [si+4]
                         imul    dwd [bx+8]
                         shrd    eax,edx,10
                         add     eax,ebp
@@ -393,8 +378,6 @@ ROTATE1                 proc    near
                         ret
 ROTATE1                 endp
 
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 ; Trie le tableau des profondeurs moyennes avec l'algorithme Byte_Sort.
 
 Byte_Sort               proc    near
@@ -421,12 +404,12 @@ Byte_Sort               proc    near
                         sub     cx,si
                         shr     cx,2
                         mov     di,OFFSET FacesVisibles
-                        rep     movsd
+                        REPMOVSD
                         pop     cx
                         mov     si,OFFSET Tab0
                         sub     cx,si
                         shr     cx,2
-                        rep     movsd
+                        REPMOVSD
                         shl     dx,1
                         jnc     @loop1
                         xor     eax,eax
@@ -435,8 +418,7 @@ Byte_Sort               proc    near
                         ret
 Byte_Sort               endp
 
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-; Transforme les coordonn‚es 3D en coordonn‚es … l'‚cran.
+; Transforme les coordonnÃ©es 3D en coordonnÃ©es Ã  l'Ã©cran.
 
 XDZ                     proc    near
                         mov     si,OFFSET LionPtsR
@@ -467,8 +449,6 @@ XDZ                     proc    near
                         ret
 XDZ                     endp
 
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 ;               ATTENTION ENVIRONMENT MAPPING !!!
 
 FILL_POLY       proc    near
@@ -540,7 +520,7 @@ s_ok_3:         mov     ax,319
                 mov     bx,fx2
                 call    INTERPOLE
 
-; Interpolation des X et Y de la mappe sur le grand cot‚:
+; Interpolation des X et Y de la mappe sur le grand cotÃ©:
 
                 mov     ax,fVx3
                 mov     bx,fVx1
@@ -580,7 +560,7 @@ s_ok_3:         mov     ax,319
                 dec     cx
                 jnz     po3
 
-; Calcul des incr‚ments inc_X et inc_Y :
+; Calcul des incrÃ©ments inc_X et inc_Y :
 
         calcinc:mov     si,fy2
                 sub     si,fy1
@@ -609,18 +589,17 @@ s_ok_3:         mov     ax,319
                 shl     eax,8
                 idiv    ecx
                 mov     inc_Y,ax
-                mov     w cs:incy+2,ax
-                mov     w cs:incy1+2,ax
+                mov     word ptr cs:incy+2,ax
+                mov     word ptr cs:incy1+2,ax
                 mov     ax,inc_X
-                mov     w cs:incx+1,ax
-                mov     w cs:incx1+1,ax
-
+                mov     word ptr cs:incx+1,ax
+                mov     word ptr cs:incx1+1,ax
 
                 mov     bp,fy1
                 mov     ax,320
                 mul     bp
-                mov     w cs:offdep1+2,ax
-                mov     w cs:offdep2+2,ax
+                mov     word ptr cs:offdep1+2,ax
+                mov     word ptr cs:offdep2+2,ax
 
                 mov     es,Virtuel
                 mov     ax,fx2
@@ -637,8 +616,8 @@ draw_next_line: or      bp,bp
 
                 mov     di,buffer[si]
                 mov     cx,buffer[si+2]
-                mov     ah,b bufferX[si]
-                mov     dh,b bufferY[si]
+                mov     ah,byte ptr bufferX[si]
+                mov     dh,byte ptr bufferY[si]
                 xor     al,al
                 xor     dl,dl
 
@@ -675,7 +654,7 @@ draw_next_line: or      bp,bp
                 jnz     floop
 
    fnext:       add     si,4
-                add     w cs:offdep1+2,320
+                add     word ptr cs:offdep1+2,320
                 inc     bp
                 cmp     bp,fy3
                 jng     draw_next_line
@@ -690,8 +669,8 @@ draw_next_line1:or      bp,bp
                 jg      end_1
                 mov     cx,buffer[si]
                 mov     di,buffer[si+2]
-                mov     ah,b bufferX[si]
-                mov     dh,b bufferY[si]
+                mov     ah,byte ptr bufferX[si]
+                mov     dh,byte ptr bufferY[si]
                 xor     al,al
                 xor     dl,dl
 
@@ -732,7 +711,7 @@ draw_next_line1:or      bp,bp
                 jnz     floop1
 
      fnext1:    add     si,4
-                add     w cs:offdep2+2,320
+                add     word ptr cs:offdep2+2,320
                 inc     bp
                 cmp     bp,fy3
                 jng     draw_next_line1
@@ -740,10 +719,7 @@ draw_next_line1:or      bp,bp
 end_1:          ret
 FILL_POLY       endp
 
-
-
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-; Effectue une interpolation lin‚aire entre deux points donn‚s.
+; Effectue une interpolation linÃ©aire entre deux points donnÃ©s.
 
 INTERPOLE       proc    near
                 sub     bp,ax
@@ -774,21 +750,19 @@ Ibcl:           adc     ebx,eax
                 ret
 INTERPOLE       endp
 
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-; Pr‚calcule les vecteurs normaux en chaque points et les norme.
+; PrÃ©calcule les vecteurs normaux en chaque points et les norme.
 
 GEN_NORM                proc    near
                         movzx   ecx,LionNb_Pts
                         lea     cx,[ecx+ecx*2]
                         mov     di,OFFSET LionVctNrmPts
                         xor     ax,ax
-                        rep     stosw
+                        rep stosw
 
                         mov     ebx,eax
         main1boucle:    push    bx
                         imul    bx,3
-                        movzx   si,LionFaces[bx]  ; ax=Nø 1ø Pt
+                        movzx   si,LionFaces[bx]  ; ax=NÂ° 1Â° Pt
                         imul    si,3
                         movsx   ecx,Lionpts[si]
                         neg     ecx
@@ -854,13 +828,12 @@ GEN_NORM                proc    near
                         dec     bp
                         jnz     @po
 
-
                         pop     bx
                         inc     bx
                         cmp     bx,LionNb_Faces
                         jnz     Main1boucle
 
-; Calcule la norme du vecteur normal … chaque point et norme le vecteur.
+; Calcule la norme du vecteur normal Ã  chaque point et norme le vecteur.
 ; La norme de chaque vecteur est de 255.
 
                         xor     si,si
@@ -916,10 +889,8 @@ GEN_NORM                proc    near
                         ret
 GEN_NORM               endp
 
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-; Calcul de la racine carr‚e.
-; entr‚e:EBP=carr‚
+; Calcul de la racine carrÃ©e.
+; entrÃ©e:EBP=carrÃ©
 ; sortie:EAX=racine
 
 RACINE                  proc    near
@@ -935,8 +906,6 @@ RACINE                  proc    near
                         jnz     racbcl
                         ret
 RACINE                  endp
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 ; DATAS
 profondeur              dw 1500
 LionNb_Pts              dw 88

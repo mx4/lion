@@ -2,7 +2,6 @@
 
 INCLUDE                 MACROS.INC
 
-;   ДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДД
 ; Affiche un Lion.
 LION                    MACRO
                         local   bclx1,bclx2,bclx3
@@ -30,22 +29,21 @@ LION                    MACRO
                         push    cs
                         pop     es
                         ENDM
-;   ДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДД
 
-;  /ДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДД\
-;  і°°°°°°°°°°°°°°°°°°° Segment Principal °°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°і
-;  \ДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДД/
+
+
+;  Segment Principal 
 CODE                    SEGMENT
                         ASSUME CS:CODE,ES:CODE,DS:CODE
                         .486P
                         ORG    100h
-;   ДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДД
+
 START:                  cld
 
 ;/-------------------------------------------------------------------------\
 ;|                         INITIALIZATIONS                                 |
 ;\-------------------------------------------------------------------------/
-; LibЉre la m‚moire non utilis‚e:
+; LibГЁre la mГ©moire non utilisГ©e:
                         mov     ah,4Ah
                         mov     bx,Offset Fincode
                         shr     bx,4
@@ -61,11 +59,10 @@ START:                  cld
                         NEWP    SegAdresse1,4096
                         NEWP    SegAdresse2,4096
 
-
-                        CALL    GEN_COS     ; Pr‚pare la table de cosinus.
-                        CALL    GEN_PLASMA  ; G‚nЉre le plasma.
-                        CALL    GEN_ADRESSE ; Pr‚pare les adresses du tunnel.
-                        CALL    GEN_NORM    ; Pr‚calcule les vecteurs normaux.
+                        CALL    GEN_COS     ; PrГ©pare la table de cosinus.
+                        CALL    GEN_PLASMA  ; GГ©nГЁre le plasma.
+                        CALL    GEN_ADRESSE ; PrГ©pare les adresses du tunnel.
+                        CALL    GEN_NORM    ; PrГ©calcule les vecteurs normaux.
                         VGA     19          ; 320*200*256
                         CALL    FLASH
 ;/-------------------------------------------------------------------------\
@@ -92,7 +89,6 @@ START:                  cld
 ;/-------------------------------------------------------------------------\
 ;|                             TRANSITION 1                                |
 ;\-------------------------------------------------------------------------/
-                        
                         
 @su:                    VGA     19
                         CALL    FLASH
@@ -137,14 +133,14 @@ START:                  cld
 ;/-------------------------------------------------------------------------\
 ;|                    3D Environnement Mapping                             |
 ;\-------------------------------------------------------------------------/
-; Transfert de SegPlasma ДД> SegAdresse1
+; Transfert de SegPlasma в”Ђв”Ђ> SegAdresse1
 
                         mov     es,SegAdresse1
                         mov     ds,SegPlasma
                         xor     si,si
                         mov     di,si
                         mov     cx,65536/4
-                        rep     movsd
+                        REPMOVSD
                         mov     cx,65536/4
                         mov     es,cs:SegPlasma
                @tr:     mov     eax,es:[di]
@@ -157,17 +153,17 @@ START:                  cld
                         mov     es,ax
 
                         CALL    INIT_3D
-                        add     b cs:@popo+4,128
-                        add     b cs:@popo1+4,128
-                        add     b cs:@popo2+4,128
-                        add     b cs:@popo3+4,128
+                        add     byte ptr cs:@popo+4,128
+                        add     byte ptr cs:@popo1+4,128
+                        add     byte ptr cs:@popo2+4,128
+                        add     byte ptr cs:@popo3+4,128
                         CALL    FRESH
                         CALL    CHAUD                        
                         
                         CALL    MAIN_3D
 
 ;/-------------------------------------------------------------------------\
-;|               RETOUR AU DOS ET REMISE DES SEGMENTS ALLOU‚S.             |
+;|               RETOUR AU DOS ET REMISE DES SEGMENTS ALLOUГ©S.             |
 ;\-------------------------------------------------------------------------/
 
  Retour:                VGA     3
@@ -179,44 +175,41 @@ START:                  cld
                         sti
                         DOS_   0
 
-;ДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДД
-;ДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДД
-; Cr‚ation d'une palette.
-; C(c1,c2,c3)ДД>D(d1,d2,d3)
+; CrГ©ation d'une palette.
 MAKE_PAL                proc    near
-                        mov     al,d
-                        sub     al,c
+                        mov     al,palTo
+                        sub     al,palFrom
                         cbw
                         mov     bx,ax
                         mov     dx,3C8h
-                        mov     al,c
+                        mov     al,palFrom
                         out     dx,al
                         xor     cx,cx
         
-                @bclPal:mov     al,d1  ; r1 := i*(d1-c1) DIV (b-a) + c1
-                        sub     al,c1
+                @bclPal:mov     al,palDstR
+                        sub     al,palSrcR
                         cbw
                         imul    cx
                         idiv    bx
-                        add     al,c1
+                        add     al,palSrcR
                         mov     dx,03C9h
                         out     dx,al
 
-                        mov     al,d2  ; g1 := i*(d2-c2) DIV (b-a) + c2
-                        sub     al,c2
+                        mov     al,palDstG
+                        sub     al,palSrcG
                         cbw
                         imul    cx
                         idiv    bx
-                        add     al,c2
+                        add     al,palSrcG
                         mov     dx,03C9h
                         out     dx,al
 
-                        mov     al,d3  ; b1 := i*(d3-c3) DIV (b-a) + c3
-                        sub     al,c3
+                        mov     al,palDstB
+                        sub     al,palSrcB
                         cbw
                         imul    cx
                         idiv    bx
-                        add     al,c3
+                        add     al,palSrcB
                         mov     dx,03C9h
                         out     dx,al
                         
@@ -225,12 +218,12 @@ MAKE_PAL                proc    near
                         jle     @bclPal
                         ret
 MAKE_PAL                endp
-;ДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДД
-; G‚nЉre une table de cosinus.
+
+; GГ©nГЁre une table de cosinus.
 
 GEN_COS         proc    near
                 mov     Cos_Table[0],16777216     ; 2^24
-                mov     Cos_Table[4],16776900     ; 2^24*cos(2г/1024)
+                mov     Cos_Table[4],16776900     ; 2^24*cos(2ПЂ/1024)
                 mov     si,OFFSET Cos_table
                 lea     di,[si+8]
                 mov     cx,1022          
@@ -253,8 +246,8 @@ GEN_COS         proc    near
                 ret
 GEN_COS         endp
 
-;ДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДД
-; Passage de toutes les couleurs de 0ДД>256
+
+; Passage de toutes les couleurs de 0в”Ђв”Ђ>256
 FLASH                   proc    near
                         mov     dx,3C8h
                         xor     ax,ax
@@ -288,66 +281,61 @@ FLASH                   proc    near
                         jns     @pal3
                         ret
 FLASH                   endp
-;ДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДД
-;   ДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДД
+
 FRESH                   proc    near
                         xor     al,al
-           @popo:       mov     c,0
-                        mov     c1,al
-                        mov     c2,al
-                        mov     c3,al
-           @popo1:      mov     d,32
-                        mov     d1,al
-                        mov     d2,32
-                        mov     d3,63
+           @popo:       mov     palFrom,0
+                        mov     palSrcR,al
+                        mov     palSrcG,al
+                        mov     palSrcB,al
+           @popo1:      mov     palTo,32
+                        mov     palDstR,al
+                        mov     palDstG,32
+                        mov     palDstB,63
                         CALL    MAKE_PAL
-           @popo2:      mov     c,32
-                        mov     c1,0
-                        mov     c2,32
-                        mov     c3,63
-           @popo3:      mov     d,63
-                        mov     d1,0
-                        mov     d2,63
-                        mov     d3,63
+           @popo2:      mov     palFrom,32
+                        mov     palSrcR,0
+                        mov     palSrcG,32
+                        mov     palSrcB,63
+           @popo3:      mov     palTo,63
+                        mov     palDstR,0
+                        mov     palDstG,63
+                        mov     palDstB,63
                         CALL    MAKE_PAL
                         ret
 FRESH                   endp                        
                     
-;   ДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДД
 CHAUD                   proc    near
                         xor     al,al
-                        mov     c,0                       
-                        mov     c,al
-                        mov     c1,al
-                        mov     c2,al
-                        mov     c3,al
-                        mov     d,32
-                        mov     d1,63
-                        mov     d2,32
-                        mov     d3,al
+                        mov     palFrom,0
+                        mov     palFrom,al
+                        mov     palSrcR,al
+                        mov     palSrcG,al
+                        mov     palSrcB,al
+                        mov     palTo,32
+                        mov     palDstR,63
+                        mov     palDstG,32
+                        mov     palDstB,al
                         CALL    MAKE_PAL
-                        mov     c,32
-                        mov     c1,63
-                        mov     c2,32
-                        mov     c3,0
-                        mov     d,63
-                        mov     d1,63
-                        mov     d2,63
-                        mov     d3,0
+                        mov     palFrom,32
+                        mov     palSrcR,63
+                        mov     palSrcG,32
+                        mov     palSrcB,0
+                        mov     palTo,63
+                        mov     palDstR,63
+                        mov     palDstG,63
+                        mov     palDstB,0
                         CALL    MAKE_PAL
                         ret
 CHAUD                   endp
-;   ДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДД
 
-
-;ДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДД
 INCLUDE                 plasma.inc
 INCLUDE                 rotazoom.inc
 INCLUDE                 tunnel.inc
-;ДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДД
-;ДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДД
+
+
 Ecran                   dw 0A000h
-message1                db ' *LION* THE 4Kb intro by Elliot/дpsilon - 1995.',13,10,'$'
+message1                db ' *LION* THE 4Kb intro by Elliot/ОЈpsilon - 1995.',13,10,'$'
 message2                db ' Initializing, please wait...',13,10,'$'
 img:
 dw 01000011100000000b,00000000000000000b
@@ -362,24 +350,23 @@ dw 01001100010111010b,00001001001100110b
 dw 00111011101101101b,01110001000111000b
 INCLUDE                 3D2.inc
 cos_table               dd 1024 dup (?)
-;ДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДД
-;  /ДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДД\
-;  і°°°°°°°°°°°°°°°°°°° Datas °°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°і
-;  \ДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДД/
-;ДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДД
+
+
+
+
 
 
 SegMappe                dw ?
 Virtuel                 dw ?
 Count                   dd ?
-c                       db ?
-c1                      db ?
-c2                      db ?
-c3                      db ?
-d                       db ?
-d1                      db ?
-d2                      db ?
-d3                      db ?
+palFrom                 db ?
+palSrcR                 db ?
+palSrcG                 db ?
+palSrcB                 db ?
+palTo                   db ?
+palDstR                 db ?
+palDstG                 db ?
+palDstB                 db ?
 pile                    db 8000 dup (?)
 FINCODE:                
                         CODE    ENDS

@@ -1,8 +1,6 @@
-; Code du tunnel mapp‚.
+; Code du tunnel mappÃ©.
 
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-; Proc‚dure principale du tunnel.
+; ProcÃ©dure principale du tunnel.
 TUNNEL                  proc    near
                         mov     es,Ecran
                         mov     fs,SegAdresse1
@@ -24,8 +22,7 @@ TUNNEL                  proc    near
                         mov     es,ax
                         ret
 TUNNEL                  endp
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
 ; Procedure d'affichage du tunnel.
 TUN                     proc    near
                 @aff:   mov     ebx,fs:[si]     ; BX=adresse
@@ -41,9 +38,8 @@ TUN                     proc    near
                         jnz     @aff
                         ret
 TUN                     endp
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-; Pr‚pare les adresses dans les segments SegAdresse1 et SegAdresse2, 
+
+; PrÃ©pare les adresses dans les segments SegAdresse1 et SegAdresse2, 
 ; en enroulant chaque ligne de la mappe 256*256 sur un cercle dont le rayon 
 ; croit.
 
@@ -61,9 +57,9 @@ GEN_ADRESSE             proc    near
                         idiv    cx
                         mov     dh,al
                         mov     dl,bl
-                        mov     w adresse+2,dx
+                        mov     word ptr adresse+2,dx
                         
-                @1:     mov     ax,w Cos_Table[bx]
+                @1:     mov     ax,word ptr Cos_Table[bx]
                         imul    Rayon
                         shrd    ax,dx,10+1+1+1
                         cwde
@@ -74,7 +70,7 @@ GEN_ADRESSE             proc    near
                         
                         lea     si,[bx-512]
                         and     si,2047
-                        mov     ax,w Cos_Table[si]
+                        mov     ax,word ptr Cos_Table[si]
                         imul    Rayon
                         shrd    ax,dx,10+1+1+1
                         cwde
@@ -86,7 +82,7 @@ GEN_ADRESSE             proc    near
                         shl     eax,6
                         add     edi,eax
                         shl     edi,1
-                        mov     ax,w adresse+2
+                        mov     ax,word ptr adresse+2
                         cmp     edi,64000
                         jb      @fs
                         add     di,256+320*2*2
@@ -107,10 +103,7 @@ GEN_ADRESSE             proc    near
                         ret
 GEN_ADRESSE             endp
 
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-;  /ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\
-;  ³°°°°°°°°°°°°°°°°°°° Datas °°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°³
-;  \ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ/
+; Datas
 
 Rayon                   dw 0
 SegAdresse1             dw ?

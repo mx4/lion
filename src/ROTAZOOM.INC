@@ -1,25 +1,24 @@
 ; ROTAZOOM EN CODE AUTOMODIFIE.
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 RotaZoom proc near
 ; Quelques explications :
-; X'=x*cos(à)-y*sin(à)
-; Y'=x*sin(à)+y*cos(à)
-; Or on veut centrer … l'ecran, on a donc :
-; X'=x*cos(à)-160*cos(à)-y*sin(à)+100*sin(à)
-; Y'=x*sin(à)-160*sin(à)+y*cos(à)-100*cos(à)
-; Les constantes sont calcul‚es une seule fois.
+; X'=x*cos(Î±)-y*sin(Î±)
+; Y'=x*sin(Î±)+y*cos(Î±)
+; Or on veut centrer Ã  l'ecran, on a donc :
+; X'=x*cos(Î±)-160*cos(Î±)-y*sin(Î±)+100*sin(Î±)
+; Y'=x*sin(Î±)-160*sin(Î±)+y*cos(Î±)-100*cos(Î±)
+; Les constantes sont calculÃ©es une seule fois.
         mov     bx,angle
         shl     bx,1
         and     bh,7
-        movsx   eax,w cos_table[bx]
+        movsx   eax,word ptr cos_table[bx]
         imul    Zoom
         shrd    eax,edx,8
         mov     edi,eax      ; edi=cosinus*2^8
         
         sub     bh,2
         and     bh,7
-        movsx   eax,w cos_table[bx]
+        movsx   eax,word ptr cos_table[bx]
         imul    Zoom
         shrd    eax,edx,8
         mov     esi,eax       ; esi=sinus*2^8
@@ -41,10 +40,10 @@ RotaZoom proc near
         imul    dx,si,100
         sub     dx,cx
 
-        add     bh,80h  ; +128   (pour centrer sur l'image en m‚moire)
-        add     dh,80h  ; +128   (pour centrer sur l'image en m‚moire)
+        add     bh,80h  ; +128   (pour centrer sur l'image en mÃ©moire)
+        add     dh,80h  ; +128   (pour centrer sur l'image en mÃ©moire)
         
-        mov     di,OFFSET BclAff+2 ; DI pointe sur le premier mot … modifier
+        mov     di,OFFSET BclAff+2 ; DI pointe sur le premier mot Ã  modifier
         
         mov     ax,cs
         mov     es,ax
@@ -53,7 +52,7 @@ RotaZoom proc near
         mov     cx,cosR
         mov     al,dh
         mov     ah,bh
-        mov     bp,320/2    ; parce que 4 pixels … la fois
+        mov     bp,320/2    ; parce que 4 pixels Ã  la fois
 
 bclm:   stosw
         add     di,2
@@ -101,8 +100,8 @@ BCLAFF: REPT    160
         mov     es,ax
         ret
 RotaZoom  endp
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+
 cosR            dw ?
 sinR            dw ?
 zoom            dd ?

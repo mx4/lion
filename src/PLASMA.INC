@@ -1,21 +1,20 @@
-; G‚n‚ration d'un segment de plasma … la Mars.
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; GÃ©nÃ©ration d'un segment de plasma la Mars.
 GEN_PLASMA      proc    near                
                 xor     di, di
                 mov     es,SegPlasma
                 stc
                 sbb     eax,eax
                 mov     cx, 16384
-                rep     stosd
+                rep stosd
                 mov     si,RandomSeed
                 call    M_MakeMUL
                 mov     RandomSeed,dx
                 xor     bx,bx
                 mov     cx,0100h
-                mov     b es:[0080h],  -2
-                mov     b es:[8000h],  -2
-                mov     b es:[0000h],   cl
-                mov     b es:[8080h],   cl
+                mov     byte ptr es:[0080h],  -2
+                mov     byte ptr es:[8000h],  -2
+                mov     byte ptr es:[0000h],   cl
+                mov     byte ptr es:[8080h],   cl
                 call    CalcFrac
                 xor     di,di
         @shr:   mov     ax,es:[di]
@@ -29,7 +28,7 @@ GEN_PLASMA      proc    near
                 mov     es,ax
                 ret
 GEN_PLASMA      endp
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
 ; Routine pour l'affichage des nuages de MARS.
 
 CalcFrac        PROC    NEAR       
@@ -105,7 +104,6 @@ CalcFrac        PROC    NEAR
 end_Frac:       ret
 CalcFrac        ENDP
 
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 M_Calc2Square           proc    near
                         mov     ch, al
@@ -126,7 +124,6 @@ M_Calc2Square           proc    near
   @CS2:                 ret
 M_Calc2Square           Endp
 
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 M_CalcSquare            proc    near
                         cmp     byte ptr es:[di], 0FFh
@@ -139,7 +136,6 @@ M_CalcSquare            proc    near
   @CS3:                 ret
 M_CalcSquare            Endp
 
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 M_MakeMUL               PROC    NEAR
                         mov     ax, 0AFh
                         mul     si
@@ -150,11 +146,9 @@ M_MakeMUL               PROC    NEAR
                         ret
 M_MakeMUL               EndP
 
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
-;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 ; DATAS
 SegPlasma               dw  ?
-RandomSeed              dw  56        ; Chiffre al‚atoire 0<X<255 (56)
+RandomSeed              dw  56        ; Chiffre alÃ©atoire 0<X<255 (56)
 W_Divider               dw  0DB97h
 
